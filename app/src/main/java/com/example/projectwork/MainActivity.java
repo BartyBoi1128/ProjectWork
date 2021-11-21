@@ -13,6 +13,8 @@ public class MainActivity extends AppCompatActivity {
 
     FirebaseAuth mAuth;
     Button btnLogOut;
+    Button Settings;
+    Button Play;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +28,17 @@ public class MainActivity extends AppCompatActivity {
         mAuth.signOut();
         startActivity(new Intent(MainActivity.this, LoginUser.class));
     });
+    Settings = findViewById(R.id.Settings);
+
+    Settings.setOnClickListener(view ->{
+        startActivity(new Intent(MainActivity.this, Settings.class));
+    });
+
+        Play = findViewById(R.id.Play);
+
+        Play.setOnClickListener(view ->{
+            startActivity(new Intent(MainActivity.this, Play.class));
+        });
     }
 
     @Override

@@ -8,12 +8,49 @@
     tools:context=".MainActivity">
 
 
-    <Button
-        android:id="@+id/buttonLogOut2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Log Out"
-        android:backgroundTint="@color/design_default_color_secondary"
-        android:layout_centerHorizontal="true"
-        android:layout_margin="20dp"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="732dp"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="0dp"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/Play"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:text="Play"
+            android:textColor="#0D47A1"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="40dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="10dp"
+            android:backgroundTint="@color/design_default_color_secondary"/>
+
+        <Button
+            android:id="@+id/Settings"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="10dp"
+            android:backgroundTint="@color/design_default_color_secondary"
+            android:text="@string/settings"
+            android:textColor="#0D47A1" />
+
+        <Button
+            android:id="@+id/buttonLogOut2"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="10dp"
+            android:backgroundTint="@color/design_default_color_secondary"
+            android:text="@string/log_out"
+            android:textColor="#0D47A1" />
+
+    </LinearLayout>
+
 </RelativeLayout>

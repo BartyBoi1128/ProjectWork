@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">ProjectWork</string>
+    <string name="log_out">Log Out</string>
+    <string name="settings">Settings</string>
 </resources>
