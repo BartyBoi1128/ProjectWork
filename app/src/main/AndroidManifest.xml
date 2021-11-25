@@ -3,10 +3,8 @@
     package="com.example.projectwork">
 
     <uses-permission android:name="android.permission.INTERNET" />
-
-    <meta-data
-        android:name="com.google.android.maps.v2.API_KEY"
-        android:value="AIzaSyAeAjFciczJu0aswG1uQ4sc9tQih7ASvUM" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
 
     <application
 
@@ -16,6 +14,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.ProjectWork">
+
+        <!--Google Maps API Key-->
+        <meta-data
+            android:name="com.google.android.maps.v2.API_KEY"
+            android:value="AIzaSyAeAjFciczJu0aswG1uQ4sc9tQih7ASvUM" />
         <activity
             android:name=".Play"
             android:exported="false" />
@@ -37,9 +40,7 @@
         <activity
             android:name=".RegisterUser"
             android:exported="true" />
-        <meta-data
-            android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-1086365038677167~8771597880"/>
+
     </application>
 
 </manifest>

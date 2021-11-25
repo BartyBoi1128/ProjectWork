@@ -4,8 +4,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -15,6 +17,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 public class Play extends AppCompatActivity implements OnMapReadyCallback {
 
     Button Back;
+    GoogleMap map;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,18 +26,20 @@ public class Play extends AppCompatActivity implements OnMapReadyCallback {
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
-        assert mapFragment != null;
         mapFragment.getMapAsync(this);
 
         Back = findViewById(R.id.BackButton);
 
         Back.setOnClickListener(view -> startActivity(new Intent(Play.this, MainActivity.class)));
     }
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        googleMap.addMarker(new MarkerOptions()
-                .position(new LatLng(0, 0))
-                .title("Marker"));
+        map = googleMap;
+
+        LatLng Limerick = new LatLng(52, -8);
+        map.addMarker(new MarkerOptions().position(Limerick).title("Limerick"));
+        googleMap.moveCamera(CameraUpdateFactory.newLatLng(Limerick));
     }
 
 }
