@@ -42,6 +42,10 @@ public class LoginUser extends AppCompatActivity {
         registerNow.setOnClickListener(view -> {
             startActivity(new Intent(LoginUser.this, RegisterUser.class));
         });
+        forgotPassNow.setOnClickListener(view -> {
+           startActivity(new Intent(LoginUser.this, ForgotPassword.class));
+        });
+
     }
     private void loginUser(){
         String email = etLoginEmail.getText().toString();
