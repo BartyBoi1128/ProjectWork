@@ -12,7 +12,6 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -26,6 +25,8 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -34,13 +35,13 @@ import com.google.android.gms.tasks.OnSuccessListener;
 public class Play extends AppCompatActivity implements OnMapReadyCallback {
 
     private static final int PERMISSIONS_FINE_LOCATION = 99;
+    private static LatLng WHEREAMI;
     Button Back;
     private GoogleMap map;
     private LocationListener DOYOUHEARTHAT;
     private LocationManager HearingAids;
     private final long MIN_TIME = 1000; //1 second
     private final long MIN_DIST = 5; //5 meters
-    private LatLng WHEREAMI;
     FusedLocationProviderClient locationgetter;
     LocationRequest requestingLocation;
     LocationCallback locationCallBack;
@@ -119,9 +120,9 @@ public class Play extends AppCompatActivity implements OnMapReadyCallback {
         DOYOUHEARTHAT = new LocationListener() {
             @Override
             public void onLocationChanged(@NonNull Location location) {
-                WHEREAMI = new LatLng(location.getLatitude(), location.getLongitude());
-                map.addMarker(new MarkerOptions().position(WHEREAMI).title("Milkman"));
-                map.moveCamera(CameraUpdateFactory.newLatLng(WHEREAMI));
+                setWHEREAMI(new LatLng(location.getLatitude(), location.getLongitude()));
+                map.addMarker(new MarkerOptions().position(getWHEREAMI()).title("Milkman"));
+                map.moveCamera(CameraUpdateFactory.newLatLng(getWHEREAMI()));
             }
         };
         HearingAids = (LocationManager) getSystemService(LOCATION_SERVICE);
@@ -134,9 +135,9 @@ public class Play extends AppCompatActivity implements OnMapReadyCallback {
     }
 
     private void updateTheLocation(Location location) {
-        WHEREAMI = new LatLng(location.getLatitude(), location.getLongitude());
-        map.addMarker(new MarkerOptions().position(WHEREAMI).title("Milkman"));
-        map.moveCamera(CameraUpdateFactory.newLatLng(WHEREAMI));
+        setWHEREAMI(new LatLng(location.getLatitude(), location.getLongitude()));
+        map.addMarker(new MarkerOptions().position(getWHEREAMI()).title("Milkman"));
+        map.moveCamera(CameraUpdateFactory.newLatLng(getWHEREAMI()));
     }
 
     private void locationUpdater() {
@@ -153,5 +154,21 @@ public class Play extends AppCompatActivity implements OnMapReadyCallback {
         locationgetter.requestLocationUpdates(requestingLocation, locationCallBack, null);
         updateGPS();
 
+    }
+
+    public static LatLng getWHEREAMI() {
+        return WHEREAMI;
+    }
+
+    public void setWHEREAMI(LatLng WHEREAMI) {
+        this.WHEREAMI = WHEREAMI;
+    }
+
+    public static double getLatitude(){
+        return WHEREAMI.latitude;
+    }
+
+    public static double getLongitude() {
+        return WHEREAMI.longitude;
     }
 }

@@ -23,7 +23,40 @@
             android:layout_marginEnd="20dp"
             android:layout_marginBottom="10dp"
             android:backgroundTint="@color/design_default_color_secondary"
-            android:text="MainMenu"
+            android:text="@string/mainmenu"
             android:textColor="#0D47A1" />
+
+        <Button
+            android:id="@+id/Radius"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="40dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="10dp"
+            android:backgroundTint="@color/design_default_color_secondary"
+            android:text="@string/distance"
+            android:textColor="#0D47A1" />
+
+        <EditText
+            android:id="@+id/editbox"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="40dp"
+            android:layout_marginEnd="20dp"
+            android:inputType="number"
+            tools:ignore="SpeakableTextPresentCheck"
+            tools:text="0" />
+
+        <Button
+            android:id="@+id/TextInput"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="20dp"
+            android:text="OK" />
+
     </LinearLayout>
 </RelativeLayout>
