@@ -291,7 +291,7 @@ public class Play extends AppCompatActivity implements OnMapReadyCallback {
                     location2.setLongitude(WHEREAMI.longitude);
                     distance = location1.distanceTo(location2);
 
-                    if(distance > 50.1) {
+                    if(distance < 50.1) {
                         MilkButton.setEnabled(true);
                     }
                 }
@@ -304,7 +304,7 @@ public class Play extends AppCompatActivity implements OnMapReadyCallback {
                 location2.setLongitude(WHEREAMI.longitude);
                 distance = location11.distanceTo(location2);
 
-                if(distance > 50.1) {
+                if(distance < 50.1) {
                     MilkButton.setEnabled(true);
                 }
                 //Start checking the time
