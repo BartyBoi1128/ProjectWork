@@ -262,6 +262,7 @@ public class Play extends AppCompatActivity implements OnMapReadyCallback {
                             .title("Milk Carton")
                             .icon(BitmapDescriptorFactory.fromBitmap(resizedMilk))));
                 }
+                printiebops(milkList.size());
                 /*
                 Marker carton = map.addMarker(new MarkerOptions()
                         .position(rand.getRandomLocation(WHEREAMI, intRadius))
@@ -297,6 +298,11 @@ public class Play extends AppCompatActivity implements OnMapReadyCallback {
             milkList.add(carton);
             //System.out.println("Bart is stinky");
         }*/
+
+    }
+
+    public void printiebops(int howya){
+        System.out.println("Supercalifragilisticexpialidocious" + howya);
 
     }
 }
