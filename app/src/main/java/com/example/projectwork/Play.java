@@ -72,9 +72,11 @@ public class Play extends AppCompatActivity implements OnMapReadyCallback {
     private Location location;
     private Location location1 = new Location("temp");
     private Location location2 = new Location("sdsdsdsdvsv");
+    private Location location11 = new Location("temp");
     private Bitmap milkImage;// = BitmapFactory.decodeResource(getResources(), getResources().getIdentifier("milkcarton", "drawable", getPackageName()));
     private Bitmap resizedMilk;// = Bitmap.createScaledBitmap(milkImage, 82 * 2, 68 * 2, false);
     private int ready = 0;
+    private boolean delivering = false;
 
     //public Bitmap milkImage = BitmapFactory.decodeResource(getResources(),getResources().getIdentifier("milkcarton", "drawable", getPackageName()));
     //public Bitmap resizedMilk = Bitmap.createScaledBitmap(milkImage,82,68,false);
@@ -118,16 +120,36 @@ public class Play extends AppCompatActivity implements OnMapReadyCallback {
         MilkButton = findViewById(R.id.MilkButton);
         MilkButton.setEnabled(false);
         MilkButton.setOnClickListener(view -> {
-            for(int j = 0; j < milkList.size(); j++) {
-                milkList.get(j).remove();
-
+            if (delivering == false) {
+                for (int j = 0; j < milkList.size(); j++) {
+                    milkList.get(j).remove();
+                }
+                milkList.clear();
+                RandomLocation rand = new RandomLocation();
+                delivery = map.addMarker(new MarkerOptions()
+                        .position(rand.getRandomLocation(WHEREAMI, 3))
+                        .title("BRING ME THE MILK AAAAAAAAAAAAAAAAHHHHHHHHHHHHH")
+                        .icon(BitmapDescriptorFactory.fromBitmap(resizedMilk)));
+                MilkButton.setEnabled(false);
             }
-            RandomLocation rand = new RandomLocation();
-            delivery = map.addMarker(new MarkerOptions()
-                    .position(rand.getRandomLocation(WHEREAMI, 3))
-                    .title("BRING ME THE MILK AAAAAAAAAAAAAAAAHHHHHHHHHHHHH")
-                    .icon(BitmapDescriptorFactory.fromBitmap(resizedMilk)));
-            MilkButton.setEnabled(false);
+            if (delivering == true){
+                delivery.remove();
+                RandomLocation rand = new RandomLocation();
+                for(int i = 0; i < 5; i++) {
+                    milkList.add(map.addMarker(new MarkerOptions()
+                            .position(rand.getRandomLocation(WHEREAMI, 3))
+                            .title("Milk Carton")
+                            .icon(BitmapDescriptorFactory.fromBitmap(resizedMilk))));
+                }
+                MilkButton.setEnabled(false);
+            }
+            if (delivering == false){
+                delivering=true;
+            }else{
+                delivering = false;
+            }
+            updateGPS();
+            Toast.makeText(this, "delivery FUCKING NOOWWWW is " + delivering, Toast.LENGTH_LONG).show();
         });
     }
 
@@ -150,6 +172,7 @@ public class Play extends AppCompatActivity implements OnMapReadyCallback {
     }
 
     private void updateGPS() {
+        Toast.makeText(this, "delivery FUCKING NOOWWWW is " + delivering, Toast.LENGTH_LONG).show();
         locationgetter = LocationServices.getFusedLocationProviderClient(this);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             locationgetter.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
@@ -195,6 +218,7 @@ public class Play extends AppCompatActivity implements OnMapReadyCallback {
     }
 
     private void updateTheLocation(Location location) {
+        Toast.makeText(this, "delivery is " + delivering, Toast.LENGTH_LONG).show();
         if (location != null) {
             WHEREAMI = new LatLng(location.getLatitude(), location.getLongitude());
 
@@ -225,13 +249,26 @@ public class Play extends AppCompatActivity implements OnMapReadyCallback {
                     distance = location1.distanceTo(location2);
 
                     System.out.println("AAAAAAAAAAAAAAAAAAAAAAAA" + distance);
-                    if(distance < 50.1) {
+                    if(distance > 50.1) {
                         MilkButton.setEnabled(true);
-                        //for(int j = 0; j < milkList.size(); j++) {
-                            //milkList.get(i).remove();
-                       // }
                     }
                 }
+            }
+            if (delivering == true){
+                Toast.makeText(this, "delivery FUCKING NOOWWWW is " + delivering, Toast.LENGTH_LONG).show();
+                LatLng temp2 = delivery.getPosition();
+                location11.setLatitude(temp2.latitude);
+                location11.setLongitude(temp2.longitude);
+                location2.setLatitude(WHEREAMI.latitude);
+                location2.setLongitude(WHEREAMI.longitude);
+                distance = location11.distanceTo(location2);
+
+                if(distance > 50.1) {
+                    MilkButton.setEnabled(true);
+                }
+            //Start checking the time
+            //Check if you are 50metres away
+            //Do the formula
             }
         }
     }
