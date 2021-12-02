@@ -8,11 +8,10 @@
     tools:context=".MainActivity">
 
     <fragment
-        android:layout_height="match_parent"
-        android:layout_width="match_parent"
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
-        />
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
     <Button
         android:id="@+id/BackButton"
@@ -36,5 +35,22 @@
         android:layout_marginEnd="20dp"
         android:layout_marginBottom="10dp"
         android:text="MILK!!!!" />
+
+    <TextView
+        android:id="@+id/XPDisplay"
+        android:layout_width="wrap_content"
+        android:layout_height="120dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="206dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginBottom="683dp"
+        android:background="@color/black"
+        android:backgroundTint="#27FFFFFF"
+        android:text="TextView"
+        android:textColor="@color/black"/>
 
 </RelativeLayout>
