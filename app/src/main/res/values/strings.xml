@@ -6,4 +6,5 @@
     <string name="mainmenu">MainMenu</string>
     <string name="distance">Distance</string>
     <string name="button">Button</string>
+    <string name="play">Play</string>
 </resources>

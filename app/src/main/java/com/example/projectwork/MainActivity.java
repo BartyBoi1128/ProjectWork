@@ -29,11 +29,7 @@ public class MainActivity extends AppCompatActivity {
         mAuth.signOut();
         startActivity(new Intent(MainActivity.this, LoginUser.class));
     });
-    Settings = findViewById(R.id.Settings);
 
-    Settings.setOnClickListener(view ->{
-        startActivity(new Intent(MainActivity.this, Settings.class));
-    });
 
         Play = findViewById(R.id.Play);
 
