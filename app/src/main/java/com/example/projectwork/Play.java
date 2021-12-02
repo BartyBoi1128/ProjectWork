@@ -50,6 +50,7 @@ public class Play extends AppCompatActivity implements OnMapReadyCallback {
     private static final int PERMISSIONS_FINE_LOCATION = 99;
     private static LatLng WHEREAMI;
     Button Back;
+    Button MilkButton;
     private GoogleMap map;
     private LocationListener DOYOUHEARTHAT;
     private LocationManager HearingAids;
@@ -65,9 +66,15 @@ public class Play extends AppCompatActivity implements OnMapReadyCallback {
     private double randomLatitude = 0;
     private double multiplier;
     private Marker marker;
+    private Marker delivery;
     FirebaseAuth mAuth;
     private List<Marker> milkList = new ArrayList<Marker>();
     private Location location;
+    private Location location1 = new Location("temp");
+    private Location location2 = new Location("sdsdsdsdvsv");
+    private Bitmap milkImage;// = BitmapFactory.decodeResource(getResources(), getResources().getIdentifier("milkcarton", "drawable", getPackageName()));
+    private Bitmap resizedMilk;// = Bitmap.createScaledBitmap(milkImage, 82 * 2, 68 * 2, false);
+    private int ready = 0;
 
     //public Bitmap milkImage = BitmapFactory.decodeResource(getResources(),getResources().getIdentifier("milkcarton", "drawable", getPackageName()));
     //public Bitmap resizedMilk = Bitmap.createScaledBitmap(milkImage,82,68,false);
@@ -75,6 +82,8 @@ public class Play extends AppCompatActivity implements OnMapReadyCallback {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        milkImage = BitmapFactory.decodeResource(getResources(), getResources().getIdentifier("milkcarton", "drawable", getPackageName()));
+        resizedMilk = Bitmap.createScaledBitmap(milkImage, 82 * 2, 68 * 2, false);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play);
 
@@ -105,6 +114,21 @@ public class Play extends AppCompatActivity implements OnMapReadyCallback {
 
         Back.setOnClickListener(view -> startActivity(new Intent(Play.this, MainActivity.class)));
         updateGPS();
+
+        MilkButton = findViewById(R.id.MilkButton);
+        MilkButton.setEnabled(false);
+        MilkButton.setOnClickListener(view -> {
+            for(int j = 0; j < milkList.size(); j++) {
+                milkList.get(j).remove();
+
+            }
+            RandomLocation rand = new RandomLocation();
+            delivery = map.addMarker(new MarkerOptions()
+                    .position(rand.getRandomLocation(WHEREAMI, 3))
+                    .title("BRING ME THE MILK AAAAAAAAAAAAAAAAHHHHHHHHHHHHH")
+                    .icon(BitmapDescriptorFactory.fromBitmap(resizedMilk)));
+            MilkButton.setEnabled(false);
+        });
     }
 
     @Override
@@ -176,16 +200,37 @@ public class Play extends AppCompatActivity implements OnMapReadyCallback {
 
             if (marker == null) {
                 marker = map.addMarker(new MarkerOptions().position(getWHEREAMI()).title("Milkman"));
-                spawnMilk();
+                RandomLocation rand = new RandomLocation();
+                for(int i = 0; i < 5; i++) {
+                    milkList.add(map.addMarker(new MarkerOptions()
+                            .position(rand.getRandomLocation(WHEREAMI, 3))
+                            .title("Milk Carton")
+                            .icon(BitmapDescriptorFactory.fromBitmap(resizedMilk))));
+                }
             } else {
                 marker.setPosition(WHEREAMI);
             }
             map.moveCamera(CameraUpdateFactory.newLatLng(getWHEREAMI()));
+            float zoomLevel = 14.0f; //This goes up to 21
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(getWHEREAMI(), zoomLevel));
             if(milkList.size() > 0) {
-                for (int i=0; i< milkList.size(); i++){
+                for (int i=0; i < milkList.size(); i++){
                     LatLng temp = milkList.get(i).getPosition();
-                    distance = Math.sqrt(((temp.latitude - WHEREAMI.latitude)*(temp.latitude - WHEREAMI.latitude)) - ((temp.longitude-WHEREAMI.longitude)*(temp.longitude-WHEREAMI.longitude)));
-                    System.out.println(distance);
+                    //distance = Math.sqrt(((temp.latitude - WHEREAMI.latitude)*(temp.latitude - WHEREAMI.latitude)) - ((temp.longitude-WHEREAMI.longitude)*(temp.longitude-WHEREAMI.longitude)));
+                    //System.out.println("AAAAAAAAAAAAAAAAAAAAAAAA" + distance);
+                    location1.setLatitude(temp.latitude);
+                    location1.setLongitude(temp.longitude);
+                    location2.setLatitude(WHEREAMI.latitude);
+                    location2.setLongitude(WHEREAMI.longitude);
+                    distance = location1.distanceTo(location2);
+
+                    System.out.println("AAAAAAAAAAAAAAAAAAAAAAAA" + distance);
+                    if(distance < 50.1) {
+                        MilkButton.setEnabled(true);
+                        //for(int j = 0; j < milkList.size(); j++) {
+                            //milkList.get(i).remove();
+                       // }
+                    }
                 }
             }
         }

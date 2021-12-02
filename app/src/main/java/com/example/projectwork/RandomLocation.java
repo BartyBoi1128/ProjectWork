@@ -15,11 +15,11 @@ public class RandomLocation extends AppCompatActivity {
     private LatLng WHEREAMI = Play.getWHEREAMI();
     public LatLng RandomLocation;
     private int intRadius = Settings.intRadius;
-    private double multiplier;
+    private double multiplier = 1;
     private double longitude = Play.getLongitude();
     private double latitude = Play.getLatitude();
-    private double randomLongitude = 0;
-    private double randomLatitude = 0;
+    private double randomLongitude = 1;
+    private double randomLatitude = 1;
 
 
     public LatLng getRandomLocation(LatLng ourPosition, int radius) {
