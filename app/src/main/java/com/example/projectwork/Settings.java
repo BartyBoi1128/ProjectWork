@@ -9,53 +9,64 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import org.w3c.dom.Text;
 
 public class Settings extends AppCompatActivity {
 
     Button MainMenu;
     Button Radius;
-    private EditText editText;
-    Button TextInput;
+    private EditText inputtedRadius;
+    Button changeRadius;
     static String radius = "0";
 
+    FirebaseAuth mAuth;
+    DatabaseReference reference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
-        editText = findViewById(R.id.editbox);
-        TextInput = findViewById(R.id.TextInput);
+        inputtedRadius = findViewById(R.id.editbox);
+        changeRadius = findViewById(R.id.OKBUTTON);
 
-        editText.setVisibility(View.GONE);
-        TextInput.setVisibility(View.GONE);
+        inputtedRadius.setVisibility(View.GONE);
+        changeRadius.setVisibility(View.GONE);
 
+        reference = FirebaseDatabase.getInstance().getReference("Users");
+
+        mAuth = FirebaseAuth.getInstance();
 
         Radius = findViewById(R.id.Radius);
 
         Radius.setOnClickListener(view -> {
-                editText.setVisibility(View.VISIBLE);
-                TextInput.setVisibility(View.VISIBLE);
+                inputtedRadius.setVisibility(View.VISIBLE);
+                changeRadius.setVisibility(View.VISIBLE);
         });
 
-        TextInput.setOnClickListener(
-                view -> {radius = editText.getText().toString();
-                    editText.setVisibility(View.GONE);
-                    TextInput.setVisibility(View.GONE);});
+        changeRadius.setOnClickListener(
+                view -> {radius = inputtedRadius.getText().toString();
+                    String BartIsNotATwat = inputtedRadius.getText().toString();
+                    SetRadius(Integer.parseInt(BartIsNotATwat));
+                    inputtedRadius.setVisibility(View.GONE);
+                    changeRadius.setVisibility(View.GONE);});
 
         MainMenu = findViewById(R.id.mainmenu);
 
         MainMenu.setOnClickListener(view ->{
             startActivity(new Intent(Settings.this, MainActivity.class));
         });
+        //SetRadius(User.getRadius());
     }
     static int intRadius = Integer.parseInt(radius);
     public static int GetRadius(){
         return intRadius;
     }
 
-    public static int SetRadius(){
-        intRadius = intRadius;
-        return intRadius;
+    public void SetRadius(int inRad){
+        reference.child(mAuth.getCurrentUser().getUid()).child("radius").setValue(inRad);
     }
 }

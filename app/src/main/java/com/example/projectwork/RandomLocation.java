@@ -6,6 +6,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 public class RandomLocation extends AppCompatActivity {
 
     private LatLng WHEREAMI = Play.getWHEREAMI();
@@ -18,32 +22,31 @@ public class RandomLocation extends AppCompatActivity {
     private double randomLatitude = 0;
 
 
-    public Location RandomLocation(){
-        multiplier = 0.09009009*multiplier;
-        randomLongitude = longitude + multiplier;
-        randomLatitude = latitude + multiplier;
-        Location RandomLocation = new Location("network");
-        RandomLocation.setLongitude(randomLongitude);
-        RandomLocation.setLatitude(randomLatitude);
-        return RandomLocation;
+    public LatLng getRandomLocation(LatLng ourPosition, int radius) {
+        //Location currentLocation = new Location("");
+        //currentLocation.setLatitude(WHEREAMI.latitude);
+        //currentLocation.setLongitude(WHEREAMI.longitude);
+
+        double x0 = ourPosition.latitude;
+        double y0 = ourPosition.longitude;
+
+        Random random = new Random();
+
+        double radiusInDegrees = radius*1000/111000f;
+
+        double u = random.nextDouble();
+        double v = random.nextDouble();
+        double w = radiusInDegrees*Math.sqrt(u);
+        double t = 2 * Math.PI * v;
+        double x = w * Math.cos(t);
+        double y = w * Math.sin(t);
+
+        double nowX = x/Math.cos(y0);
+
+        double foundLatitude = nowX + x0;
+        double foundLongitude = y + y0;
+        LatLng randomLatLng = new LatLng (foundLatitude, foundLongitude);
+        return randomLatLng;
     }
 
-    public void randomWithRange(){
-        int max = intRadius;
-        int min = 1;
-        int range = (max - min) + 1;
-        multiplier =  (int)(Math.random() * range) + min;
-        int temp = (int)(Math.random()*5)+1;
-        if(temp == 1) {
-            multiplier = multiplier + 0.2;
-        }if(temp == 2){
-            multiplier = multiplier + 0.5;
-        }if(temp == 3){
-            multiplier = multiplier + 0.047;
-        }if(temp == 4){
-            multiplier = multiplier + 0.78;
-        }else {
-            multiplier = multiplier + 1.32;
-        }
-    }
 }
