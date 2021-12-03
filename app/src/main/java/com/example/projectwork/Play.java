@@ -77,6 +77,7 @@ public class Play extends AppCompatActivity implements OnMapReadyCallback {
     private Bitmap resizedMilk;// = Bitmap.createScaledBitmap(milkImage, 82 * 2, 68 * 2, false);
     private int ready = 0;
     private boolean delivering = false;
+    private long startTime = 0;
 
     //public Bitmap milkImage = BitmapFactory.decodeResource(getResources(),getResources().getIdentifier("milkcarton", "drawable", getPackageName()));
     //public Bitmap resizedMilk = Bitmap.createScaledBitmap(milkImage,82,68,false);
@@ -119,6 +120,7 @@ public class Play extends AppCompatActivity implements OnMapReadyCallback {
 
         MilkButton = findViewById(R.id.MilkButton);
         MilkButton.setEnabled(false);
+        
         MilkButton.setOnClickListener(view -> {
             if (delivering == false) {
                 for (int j = 0; j < milkList.size(); j++) {
@@ -385,6 +387,5 @@ public class Play extends AppCompatActivity implements OnMapReadyCallback {
 
     public void printiebops(int howya){
         System.out.println("Supercalifragilisticexpialidocious" + howya);
-
     }
 }
