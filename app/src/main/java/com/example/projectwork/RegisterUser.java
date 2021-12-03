@@ -86,7 +86,8 @@ public class RegisterUser extends AppCompatActivity{
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     if (task.isSuccessful()) {
                         Toast.makeText(RegisterUser.this, "User registered successfully", Toast.LENGTH_SHORT).show();
-                        User user = new User(username,0, email,5);
+                        User user = new User(username,0, email);
+
 
                         FirebaseDatabase.getInstance().getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).setValue(user);
                         startActivity(new Intent(RegisterUser.this, LoginUser.class));

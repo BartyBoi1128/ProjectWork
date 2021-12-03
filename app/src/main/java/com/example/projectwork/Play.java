@@ -174,7 +174,6 @@ public class Play extends AppCompatActivity implements OnMapReadyCallback {
                 String value = String.valueOf(snapshot.child("xp").getValue());
                 int currentXP = Integer.parseInt(value);
                 final int newValue = xpGained + currentXP;
-                reference.child(mAuth.getCurrentUser().getUid()).child("xp").setValue(newValue);
             }
 
             @Override
