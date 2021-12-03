@@ -15,6 +15,7 @@ import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.location.LocationCallback;
@@ -28,8 +29,6 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.Circle;
-import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -40,7 +39,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,7 +52,6 @@ public class Play extends AppCompatActivity implements OnMapReadyCallback {
     private GoogleMap map;
     private LocationListener DOYOUHEARTHAT;
     private LocationManager HearingAids;
-    private int intRadius;
     private double distance;
     private final long MIN_TIME = 1000; //1 second
     private final long MIN_DIST = 5; //5 meters
@@ -64,7 +61,6 @@ public class Play extends AppCompatActivity implements OnMapReadyCallback {
     public LatLng RandomLocation;
     private double randomLongitude = 0;
     private double randomLatitude = 0;
-    private double multiplier;
     private Marker marker;
     private Marker delivery;
     FirebaseAuth mAuth;
@@ -77,18 +73,27 @@ public class Play extends AppCompatActivity implements OnMapReadyCallback {
     private Bitmap resizedMilk;// = Bitmap.createScaledBitmap(milkImage, 82 * 2, 68 * 2, false);
     private int ready = 0;
     private boolean delivering = false;
-    private long startTime = 0;
-
-    //public Bitmap milkImage = BitmapFactory.decodeResource(getResources(),getResources().getIdentifier("milkcarton", "drawable", getPackageName()));
-    //public Bitmap resizedMilk = Bitmap.createScaledBitmap(milkImage,82,68,false);
-
+    private double start;
+    private double end;
+    private double elapsedTime;
+    private double elapsedHours;
+    private double currentDistance;
+    DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Users");
+    private TextView XPDisplay;
+    private Bitmap destination;
+    private Bitmap resizedFlag;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         milkImage = BitmapFactory.decodeResource(getResources(), getResources().getIdentifier("milkcarton", "drawable", getPackageName()));
-        resizedMilk = Bitmap.createScaledBitmap(milkImage, 82 * 2, 68 * 2, false);
+        resizedMilk = Bitmap.createScaledBitmap(milkImage, 29 * 2, 70 * 2, false);
+        destination = BitmapFactory.decodeResource(getResources(), getResources().getIdentifier("checkerflag_bitmap", "drawable", getPackageName()));
+        resizedFlag = Bitmap.createScaledBitmap(destination, 79 * 2, 55 * 2, false);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play);
+
+        XPDisplay = findViewById(R.id.XPDisplay);
+
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -112,7 +117,7 @@ public class Play extends AppCompatActivity implements OnMapReadyCallback {
             }
         };
 
-
+        showXP();
         Back = findViewById(R.id.BackButton);
 
         Back.setOnClickListener(view -> startActivity(new Intent(Play.this, MainActivity.class)));
@@ -120,7 +125,6 @@ public class Play extends AppCompatActivity implements OnMapReadyCallback {
 
         MilkButton = findViewById(R.id.MilkButton);
         MilkButton.setEnabled(false);
-        
         MilkButton.setOnClickListener(view -> {
             if (delivering == false) {
                 for (int j = 0; j < milkList.size(); j++) {
@@ -129,29 +133,69 @@ public class Play extends AppCompatActivity implements OnMapReadyCallback {
                 milkList.clear();
                 RandomLocation rand = new RandomLocation();
                 delivery = map.addMarker(new MarkerOptions()
-                        .position(rand.getRandomLocation(WHEREAMI, 3))
+                        .position(rand.getRandomLocation(WHEREAMI, 1))
                         .title("BRING ME THE MILK AAAAAAAAAAAAAAAAHHHHHHHHHHHHH")
-                        .icon(BitmapDescriptorFactory.fromBitmap(resizedMilk)));
+                        .icon(BitmapDescriptorFactory.fromBitmap(resizedFlag)));
                 MilkButton.setEnabled(false);
+                start = System.currentTimeMillis();
+                updateGPS();
+                currentDistance = distance;
+                delivering=true;
             }
-            if (delivering == true){
+           else if (delivering == true){
                 delivery.remove();
                 RandomLocation rand = new RandomLocation();
                 for(int i = 0; i < 5; i++) {
                     milkList.add(map.addMarker(new MarkerOptions()
-                            .position(rand.getRandomLocation(WHEREAMI, 3))
+                            .position(rand.getRandomLocation(WHEREAMI, 1))
                             .title("Milk Carton")
                             .icon(BitmapDescriptorFactory.fromBitmap(resizedMilk))));
                 }
                 MilkButton.setEnabled(false);
-            }
-            if (delivering == false){
-                delivering=true;
-            }else{
                 delivering = false;
+                changeXP();
+                showXP();
+                updateGPS();
             }
-            updateGPS();
-            Toast.makeText(this, "delivery FUCKING NOOWWWW is " + delivering, Toast.LENGTH_LONG).show();
+
+            end = System.currentTimeMillis();
+            elapsedTime = end-start;
+            elapsedTime = elapsedTime/1000;
+            elapsedTime = elapsedTime/60;
+            elapsedHours = elapsedTime/60;
+        });
+    }
+
+    public void changeXP(){
+        int xpGained = (int) ((currentDistance/10)/elapsedHours);
+        reference.child(mAuth.getCurrentUser().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String value = String.valueOf(snapshot.child("xp").getValue());
+                int currentXP = Integer.parseInt(value);
+                final int newValue = xpGained + currentXP;
+                reference.child(mAuth.getCurrentUser().getUid()).child("xp").setValue(newValue);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    public void showXP(){
+        reference.child(mAuth.getCurrentUser().getUid()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String showUsDaXP = String.valueOf(snapshot.child("xp").getValue());
+                XPDisplay.setText("Current XP: " +showUsDaXP);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
         });
     }
 
@@ -174,7 +218,6 @@ public class Play extends AppCompatActivity implements OnMapReadyCallback {
     }
 
     private void updateGPS() {
-        Toast.makeText(this, "delivery FUCKING NOOWWWW is " + delivering, Toast.LENGTH_LONG).show();
         locationgetter = LocationServices.getFusedLocationProviderClient(this);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             locationgetter.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
@@ -204,10 +247,11 @@ public class Play extends AppCompatActivity implements OnMapReadyCallback {
                         marker = map.addMarker(new MarkerOptions().position(getWHEREAMI()).title("Milkman"));
                     } else {
                         marker.setPosition(WHEREAMI);
-
+                        updateGPS();
                     }
                     map.moveCamera(CameraUpdateFactory.newLatLng(getWHEREAMI()));
                 }
+
             }
         };
         HearingAids = (LocationManager) getSystemService(LOCATION_SERVICE);
@@ -220,7 +264,6 @@ public class Play extends AppCompatActivity implements OnMapReadyCallback {
     }
 
     private void updateTheLocation(Location location) {
-        Toast.makeText(this, "delivery is " + delivering, Toast.LENGTH_LONG).show();
         if (location != null) {
             WHEREAMI = new LatLng(location.getLatitude(), location.getLongitude());
 
@@ -242,22 +285,18 @@ public class Play extends AppCompatActivity implements OnMapReadyCallback {
             if(milkList.size() > 0) {
                 for (int i=0; i < milkList.size(); i++){
                     LatLng temp = milkList.get(i).getPosition();
-                    //distance = Math.sqrt(((temp.latitude - WHEREAMI.latitude)*(temp.latitude - WHEREAMI.latitude)) - ((temp.longitude-WHEREAMI.longitude)*(temp.longitude-WHEREAMI.longitude)));
-                    //System.out.println("AAAAAAAAAAAAAAAAAAAAAAAA" + distance);
                     location1.setLatitude(temp.latitude);
                     location1.setLongitude(temp.longitude);
                     location2.setLatitude(WHEREAMI.latitude);
                     location2.setLongitude(WHEREAMI.longitude);
                     distance = location1.distanceTo(location2);
 
-                    System.out.println("AAAAAAAAAAAAAAAAAAAAAAAA" + distance);
-                    if(distance > 50.1) {
+                    if(distance < 50.1) {
                         MilkButton.setEnabled(true);
                     }
                 }
             }
             if (delivering == true){
-                Toast.makeText(this, "delivery FUCKING NOOWWWW is " + delivering, Toast.LENGTH_LONG).show();
                 LatLng temp2 = delivery.getPosition();
                 location11.setLatitude(temp2.latitude);
                 location11.setLongitude(temp2.longitude);
@@ -265,12 +304,12 @@ public class Play extends AppCompatActivity implements OnMapReadyCallback {
                 location2.setLongitude(WHEREAMI.longitude);
                 distance = location11.distanceTo(location2);
 
-                if(distance > 50.1) {
+                if(distance < 50.1) {
                     MilkButton.setEnabled(true);
                 }
-            //Start checking the time
-            //Check if you are 50metres away
-            //Do the formula
+                //Start checking the time
+                //Check if you are 50metres away
+                //Do the formula
             }
         }
     }
@@ -290,24 +329,6 @@ public class Play extends AppCompatActivity implements OnMapReadyCallback {
         updateGPS();
     }
 
-    //Padi's code
-    /*public Location RandomLocation(){
-        multiplier = 0.09009009*multiplier;
-        randomLongitude = WHEREAMI.longitude + multiplier;
-        randomLatitude = WHEREAMI.latitude + multiplier;
-        Location RandomLocation = new Location("network");
-        RandomLocation.setLongitude(randomLongitude);
-        RandomLocation.setLatitude(randomLatitude);
-        return RandomLocation;
-    }
-
-    public void randomWithRange(){
-        int max = Settings.intRadius;
-        int min = 1;
-        int range = (max - min) + 1;
-        multiplier =  (int)(Math.random() * range) + min;
-        int temp = (int)(Math.random()*max)+1;
-    }*/
 
     public static LatLng getWHEREAMI() {
         return WHEREAMI;
@@ -323,69 +344,5 @@ public class Play extends AppCompatActivity implements OnMapReadyCallback {
 
     public static double getLongitude() {
         return WHEREAMI.longitude;
-    }
-
-    private void spawnMilk() {
-        //Bitmap milkImage = BitmapFactory.decodeResource(getResources(),getResources().getIdentifier("milkcarton", "drawable", getPackageName()));
-        Bitmap milkImage = BitmapFactory.decodeResource(getResources(), getResources().getIdentifier("milkcarton", "drawable", getPackageName()));
-        Bitmap resizedMilk = Bitmap.createScaledBitmap(milkImage, 82 * 2, 68 * 2, false);
-        Bitmap milkImage1 = BitmapFactory.decodeResource(getResources(), getResources().getIdentifier("milkcarton1", "drawable", getPackageName()));
-        Bitmap resizedMilk1 = Bitmap.createScaledBitmap(milkImage, 82 * 3, 68 * 3, false);
-
-        final DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Users");
-        reference.child(mAuth.getCurrentUser().getUid()).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                String value = String.valueOf(snapshot.child("radius").getValue());
-                System.out.println("value in radius is " + value);
-                intRadius = Integer.parseInt(value);
-                RandomLocation rand = new RandomLocation();
-                for(int i = 0; i <5; i++) {
-                    milkList.add(map.addMarker(new MarkerOptions()
-                            .position(rand.getRandomLocation(WHEREAMI, intRadius))
-                            .title("Milk Carton")
-                            .icon(BitmapDescriptorFactory.fromBitmap(resizedMilk))));
-                }
-                printiebops(milkList.size());
-                /*
-                Marker carton = map.addMarker(new MarkerOptions()
-                        .position(rand.getRandomLocation(WHEREAMI, intRadius))
-                        .title("Milk Carton")
-                        .icon(BitmapDescriptorFactory.fromBitmap(resizedMilk)));
-                //rand = new RandomLocation();
-                Marker carton2 = map.addMarker(new MarkerOptions()
-                        .position(rand.getRandomLocation(WHEREAMI, intRadius))
-                        .title("Milk Carton")
-                        .icon(BitmapDescriptorFactory.fromBitmap(resizedMilk)));*/
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-
-        /*for(int i = 0;i<5;i++) {
-            RandomLocation rand = new RandomLocation();
-            milkList.add(map.addMarker(new MarkerOptions()
-                    .position(rand.getRandomLocation(WHEREAMI, Settings.intRadius))
-                    .title("Milk Carton")
-                    .icon(BitmapDescriptorFactory.fromBitmap(resizedMilk))));
-        }*/
-        /*for(int i = 0;i<5;i++) {
-            RandomLocation rand = new RandomLocation();
-            Marker carton = map.addMarker(new MarkerOptions()
-                    .position(rand.getRandomLocation(WHEREAMI, Settings.intRadius))
-                    .title("Milk Carton")
-                    .icon(BitmapDescriptorFactory.fromBitmap(resizedMilk)));
-            milkList.add(carton);
-            //System.out.println("Bart is stinky");
-        }*/
-
-    }
-
-    public void printiebops(int howya){
-        System.out.println("Supercalifragilisticexpialidocious" + howya);
     }
 }

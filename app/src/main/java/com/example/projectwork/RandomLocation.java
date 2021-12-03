@@ -14,7 +14,6 @@ public class RandomLocation extends AppCompatActivity {
 
     private LatLng WHEREAMI = Play.getWHEREAMI();
     public LatLng RandomLocation;
-    private int intRadius = Settings.intRadius;
     private double multiplier = 1;
     private double longitude = Play.getLongitude();
     private double latitude = Play.getLatitude();
