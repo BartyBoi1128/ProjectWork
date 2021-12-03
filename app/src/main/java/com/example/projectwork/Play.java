@@ -133,7 +133,7 @@ public class Play extends AppCompatActivity implements OnMapReadyCallback {
                 milkList.clear();
                 RandomLocation rand = new RandomLocation();
                 delivery = map.addMarker(new MarkerOptions()
-                        .position(rand.getRandomLocation(WHEREAMI, 1))
+                        .position(rand.getRandomLocation(WHEREAMI, 3))
                         .title("BRING ME THE MILK AAAAAAAAAAAAAAAAHHHHHHHHHHHHH")
                         .icon(BitmapDescriptorFactory.fromBitmap(resizedFlag)));
                 MilkButton.setEnabled(false);
@@ -147,7 +147,7 @@ public class Play extends AppCompatActivity implements OnMapReadyCallback {
                 RandomLocation rand = new RandomLocation();
                 for(int i = 0; i < 5; i++) {
                     milkList.add(map.addMarker(new MarkerOptions()
-                            .position(rand.getRandomLocation(WHEREAMI, 1))
+                            .position(rand.getRandomLocation(WHEREAMI, 3))
                             .title("Milk Carton")
                             .icon(BitmapDescriptorFactory.fromBitmap(resizedMilk))));
                 }
